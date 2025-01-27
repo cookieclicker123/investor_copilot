@@ -46,3 +46,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 mkdir tmp
 ```
+
+## index the PDF's into the knowledge base
+
+```bash
+python knowledge_base/pdf_to_json.py
+
+python knowledge_base/json_to_index.py
+```
