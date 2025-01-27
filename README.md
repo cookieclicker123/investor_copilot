@@ -54,3 +54,9 @@ python knowledge_base/pdf_to_json.py
 
 python knowledge_base/json_to_index.py
 ```
+
+## Run in terminal
+
+```bash
+python main.py
+```
