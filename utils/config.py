@@ -9,22 +9,22 @@ load_dotenv()
 class ModelConfig:
     model_name: str = "llama3.2"
     temperature: float = 0.7
-    max_tokens: int = 8192
+    max_tokens: int = 4096
     provider: str = "ollama"
 
     groq_api_key: str = os.getenv("GROQ_API_KEY")
-    groq_model_name: str = "mixtral-8x7b-32768"
+    groq_model_name: str = "llama-3.3-70b-versatile"
 
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY")
-    anthropic_model_name: str = "claude-3-5-sonnet-20241022"
+    anthropic_model_name: str = "claude-3-5-sonnet-latest"
 
     openai_api_key: str = os.getenv("OPENAI_API_KEY")
-    openai_model_name: str = "gpt-4o"
+    openai_model_name: str = "gpt-3.5-turbo"
 
     local_display_name: str = "Local (Ollama LLaMA 3.2)"
-    groq_display_name: str = "Groq (Mixtral 8x7B)"
+    groq_display_name: str = "Groq (LLaMA 3.3 70B)"
     anthropic_display_name: str = "Anthropic (Claude 3.5 Sonnet)"
-    openai_display_name: str = "OpenAI (GPT-4o)"
+    openai_display_name: str = "OpenAI (GPT-3.5 Turbo)"
 
 @dataclass
 class APIConfig:

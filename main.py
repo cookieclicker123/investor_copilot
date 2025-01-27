@@ -1,48 +1,61 @@
+import os
+from groq import Groq
+from utils.config import Config
 from agents.meta_agent import create_meta_agent
 from agents.pdf_agent import create_pdf_agent
 from agents.registry import register_agent, list_agents
-from utils.config import Config
 from utils.callbacks import stream_token, get_streamed_text, clear_streamed_text
 from utils.data_types import LLMRequest, LLMResponse, OnTextFn
-from openai import OpenAI
-
-client = OpenAI(api_key=Config.model_config.openai_api_key)
-
-# Set OpenAI API key
 
 def llm_generate_fn(request: LLMRequest, on_text: OnTextFn) -> LLMResponse:
-    """Generate a response using OpenAI's API."""
-    print(f"Sending prompt to LLM: {request.prompt}")  # Debugging statement
-    response = client.chat.completions.create(model=Config.model_config.openai_model_name,
-    messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": request.prompt}
-    ],
-    max_tokens=Config.model_config.max_tokens,
-    temperature=Config.model_config.temperature,
-    stream=True)
-    
-    # Stream the response
-    for chunk in response:
-        if 'choices' in chunk:
-            for choice in chunk.choices:
-                if 'delta' in choice and 'content' in choice['delta']:
-                    on_text(choice['delta']['content'])
-                    print("Streaming content:", choice['delta']['content'])  # Debugging statement
-    
-    # Capture the streamed text
-    raw_response = get_streamed_text()
-    print("Raw response captured:", raw_response)  # Debugging statement
-    clear_streamed_text()  # Clear after capturing
+    """Generate a response using Groq's API."""
+    # Set up Groq API client
+    client = Groq(api_key=Config.model_config.groq_api_key)
 
-    return LLMResponse(
-        generated_at="now",  # Placeholder for actual timestamp
-        request=request,
-        raw_response=raw_response,
-        model_name=Config.model_config.model_name,
-        model_provider=Config.model_config.provider,
-        time_in_seconds=0  # Placeholder for actual timing
-    )
+    # Define the conversation using the Messages API format
+    messages = [
+        {"role": "user", "content": request.prompt}
+    ]
+
+    try:
+        # Make a request to the Groq Messages API
+        response = client.chat.completions.create(
+            model=Config.model_config.groq_model_name,  # Use the correct model name
+            messages=messages
+        )
+
+        # Print the full response for debugging
+        #print("Full response:", response)
+
+        # Extract the message content
+        if response and response.choices:
+            raw_response = response.choices[0].message.content
+            on_text(raw_response)
+            #print("Streaming content:", raw_response)  # Debugging statement
+        else:
+            raw_response = "No response received from the model."
+
+        clear_streamed_text()
+
+        # Return the response
+        return LLMResponse(
+            generated_at="now",
+            request=request,
+            raw_response=raw_response,  # Ensure this is a string
+            model_name=Config.model_config.model_name,
+            model_provider=Config.model_config.provider,
+            time_in_seconds=0
+        )
+    except Exception as e:
+        print(f"Error during LLM interaction: {str(e)}")
+        return LLMResponse(
+            generated_at="now",
+            request=request,
+            raw_response=f"Error: {str(e)}",
+            model_name=Config.model_config.model_name,
+            model_provider=Config.model_config.provider,
+            time_in_seconds=0
+        )
 
 def main():
     print("Initializing Expert System...")

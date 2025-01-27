@@ -7,24 +7,23 @@ import json
 
 def create_meta_agent(llm_generate_fn: Callable[[LLMRequest, OnTextFn], LLMResponse]) -> Callable[[str, OnTextFn], str]:
     def process_query(query: str, on_text: OnTextFn) -> str:
-        print(f"Processing query: {query}")  # Debugging statement
         try:
             # Analyze the query to determine necessary agents
             required_agents = analyze_query(query)
-            print(f"Required agents: {required_agents}")  # Debugging statement
+            #print(f"Required agents: {required_agents}")  # Debugging statement
             clear_workpad()
 
             # Process each agent
             for agent_name in required_agents:
                 agent_fn = get_agent(agent_name)
                 if agent_fn:
-                    response = agent_fn(query, on_text)  # Pass on_text here
-                    print(f"Response from {agent_name}: {response}")  # Debugging statement
+                    response = agent_fn(query, on_text)
+                    #print(f"Response from {agent_name}: {response}")  # Debugging statement
                     write_to_workpad(agent_name, response)
 
             # Synthesize the final response
             synthesis_response = synthesize_response(query)
-            print(f"Synthesized response: {synthesis_response}")  # Debugging statement
+            #print(f"Synthesis response: {synthesis_response}")  # Debugging statement
             return synthesis_response
 
         except Exception as e:

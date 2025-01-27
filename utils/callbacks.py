@@ -6,8 +6,8 @@ streamed_text = ""
 def stream_token(token: str):
     """Stream tokens to stdout as they're generated."""
     global streamed_text
-    sys.stdout.write(token)
-    sys.stdout.flush()
+    #sys.stdout.write(token)
+    #sys.stdout.flush()
     streamed_text += token
 
 def get_streamed_text() -> str:
